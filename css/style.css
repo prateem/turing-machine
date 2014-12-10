@@ -1,0 +1,50 @@
+@import url(http://fonts.googleapis.com/css?family=Open+Sans);
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 1.4em;
+  min-height: 100vh;
+  max-height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+}
+
+footer {
+  border-top: 1px dashed gray;
+  background-color: lightgray;
+}
+
+#site-content {
+  flex: 3;
+  overflow: auto;
+}
+
+#run {
+  width: 100%;
+}
+
+.state {margin-bottom: 15px;}
+
+.final {
+  border: 1px dashed darkblue;
+  background-color: aquamarine;
+}
+
+.monospace {
+  font-family: monospace;
+}
+
+#log {
+  flex: 1;
+  max-height: 300px;
+  overflow: auto;
+}
+
+#log.error {
+  background-color: darksalmon;
+}
+
+#log.success {
+  background-color: dimgrey;
+}

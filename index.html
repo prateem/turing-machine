@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <title>Build Your Own Deterministic Turing Machine</title>
+  <meta charset="UTF-8">
+
+  <!-- BOOTSTRAP -->
+  <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+
+  <!-- ANGULARJS -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.6/angular.min.js"></script>
+  <script src="js/app.js"></script>
+
+  <link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+<body ng-app="machine" ng-controller="machine.main">
+
+<section id="site-content">
+
+  <div class="container">
+
+    <div class="row">
+      <div class="col-lg-3 col-lg-push-9">
+        <div class="text-center">
+          <h3>Build Your Own Deterministic Turing Machine</h3>
+        </div>
+
+        <div class="small">
+          <p>Begin by adding named states to the machine, indicating what each state will read and write. Reference states by name when determining what state to go to. Finally, determine whether the read head should move left, right or stop on each state change.</p>
+
+          <ul>
+            <li>The initial state must be named "initial".</li>
+            <li>Names must be a single word consisting of letters or numbers.</li>
+            <li>Read/write fields can only be 1 character long. States may read/write a "blank" if you place a space.</li>
+          </ul>
+
+          <p>When you're ready, type in your input sequence and click the button below to see the results of your turing machine!</p>
+        </div>
+
+        <form class="form-horizontal" ng-submit="run()">
+          <div class="form-group">
+            <label class="control-label col-xs-3" for="sequence">Input</label>
+            <div class="col-xs-9">
+              <input ng-model="sequence" id="sequence" class="form-control" placeholder="0100100"
+                     pattern="[\S]+" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="col-xs-12">
+              <input type="submit" class="form-control btn btn-success" value="Run the machine">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="col-xs-12">
+              <button type="button" class="form-control btn btn-default" ng-click="startOver()">Start Over</button>
+            </div>
+          </div>
+        </form>
+
+      </div>
+      <div class="col-lg-9 col-lg-pull-3">
+        <h3>Add a new state</h3>
+
+        <form class="form-horizontal" ng-submit="addState()">
+          <div class="form-group">
+            <div class="col-xs-12 col-md-offset-1 col-md-2 text-center state">
+              <label for="name" class="col-xs-3 col-md-12">Name</label>
+              <div class="col-xs-9 col-md-12">
+                <input type="text" id="name" ng-model="newState.name" class="form-control"
+                       placeholder="initial" pattern="[\w]+" required>
+              </div>
+            </div>
+
+            <div class="col-xs-12 col-md-2 text-center state">
+            <label for="reads" class="col-xs-3 col-md-12">Reads</label>
+              <div class="col-xs-9 col-md-12">
+                <input type="text" id="reads" ng-model="newState.reads" class="form-control"
+                       placeholder="0" pattern="." maxlength="1" ng-trim="false" required>
+              </div>
+            </div>
+
+            <div class="col-xs-12 col-md-2 text-center state">
+              <label for="writes" class="col-xs-3 col-md-12">Writes</label>
+              <div class="col-xs-9 col-md-12">
+                <input type="text" id="writes" ng-model="newState.writes" class="form-control"
+                       placeholder="1" pattern="." maxlength="1" ng-trim="false" required>
+              </div>
+            </div>
+
+            <div class="col-xs-12 col-md-2 text-center state">
+              <label for="becomes" class="col-xs-3 col-md-12">Goes To</label>
+              <div class="col-xs-9 col-md-12">
+                <input type="text" id="becomes" ng-model="newState.becomes" class="form-control"
+                       placeholder="other" pattern="[\w]+" required>
+              </div>
+            </div>
+
+            <div class="col-xs-12 col-md-2 text-center state">
+              <label for="direction" class="col-xs-3 col-md-12">Direction</label>
+              <div class="col-xs-9 col-md-12">
+                <select ng-model="newState.direction" class="form-control" id="direction"
+                        ng-options="key as value for (key, value) in directions">
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="col-xs-12">
+              <input type="submit" class="btn btn-primary form-control" value="Add State">
+            </div>
+          </div>
+
+        </form>
+
+        <div ng-show="states">
+          <h3>Machine States</h3>
+
+          <form>
+
+            <div class="form-group hidden-xs hidden-sm">
+              <div class="col-xs-12 col-md-offset-1 col-md-2 text-center state">
+                <strong>Name</strong>
+              </div>
+
+              <div class="col-xs-12 col-md-2 text-center state">
+                <strong>Reads</strong>
+              </div>
+
+              <div class="col-xs-12 col-md-2 text-center state">
+                <strong>Writes</strong>
+              </div>
+
+              <div class="col-xs-12 col-md-2 text-center state">
+                <strong>Goes To</strong>
+              </div>
+
+              <div class="col-xs-12 col-md-2 text-center state">
+                <strong>Direction</strong>
+              </div>
+            </div>
+
+            <div class="form-group" ng-repeat="state in states track by $index">
+              <div class="col-xs-12 col-md-offset-1 col-md-2 text-center state">
+                <label class="visible-xs visible-sm col-xs-3" for="state-{{$index}}-name">Name</label>
+                <div class="col-xs-9 col-md-12">
+                  <input type="text" ng-model="state.name" class="form-control"
+                         placeholder="initial" pattern="[\w]+" id="state-{{$index}}-name">
+                </div>
+              </div>
+
+              <div class="col-xs-12 col-md-2 text-center state">
+                <label class="visible-xs visible-sm col-xs-3" for="state-{{$index}}-reads">Reads</label>
+                <div class="col-xs-9 col-md-12">
+                  <input type="text" ng-model="state.reads" class="form-control" ng-trim="false"
+                         placeholder="0" pattern="." maxlength="1" id="state-{{$index}}-reads">
+                </div>
+              </div>
+
+              <div class="col-xs-12 col-md-2 text-center state">
+                <label class="visible-xs visible-sm col-xs-3" for="state-{{$index}}-writes">Writes</label>
+                <div class="col-xs-9 col-md-12">
+                  <input type="text" ng-model="state.writes" class="form-control" ng-trim="false"
+                         placeholder="1" pattern="." maxlength="1" id="state-{{$index}}-writes">
+                </div>
+              </div>
+
+              <div class="col-xs-12 col-md-2 text-center state">
+                <label class="visible-xs visible-sm col-xs-3" for="state-{{$index}}-becomes">Goes To</label>
+                <div class="col-xs-9 col-md-12">
+                  <input type="text" ng-model="state.becomes" class="form-control"
+                         placeholder="other" pattern="[\w]+" id="state-{{$index}}-becomes">
+                </div>
+              </div>
+
+              <div class="col-xs-12 col-md-2 text-center state">
+                <label class="visible-xs visible-sm col-xs-3" for="state-{{$index}}-direction">Direction</label>
+                <div class="col-xs-9 col-md-12">
+                  <select ng-model="state.direction" class="form-control" id="state-{{$index}}-direction"
+                          ng-options="key as value for (key, value) in directions">
+                  </select>
+                </div>
+              </div>
+
+              <div class="divider visible-xs visible-sm"></div>
+
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section id="log" ng-show="message" ng-class="message.type">
+  <div class="container">
+
+    <h3 ng-bind="message.text"></h3>
+
+    <div ng-show="machineRunCompleted">
+
+      <div class="row">
+        <div class="col-sm-3 text-center">Original sequence</div>
+        <div class="col-sm-9"><span class="monospace" ng-bind="original"></span></div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-3 text-center">After machine run</div>
+        <div class="col-sm-9"><span class="monospace" ng-bind="result"></span></div>
+      </div>
+
+      <br>
+      <h4>Below is a log of all actions taken by the machine.</h4>
+
+      <p class="monospace small">
+        <span ng-repeat="entry in runLog track by $index">- {{entry}}<br></span>
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  <div class="container text-center small">
+    Created by Prateem Shrestha. Licensed under GNU GPL v2.0. Code available at <a href="https://github.com/prateem/turing-machine">Github</a>.
+  </div>
+</footer>
+</body>
+</html>
