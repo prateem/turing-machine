@@ -1,0 +1,25 @@
+@import url(http://fonts.googleapis.com/css?family=Open+Sans);
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 1.4em;
+  min-height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+}
+
+footer {
+  border-top: 1px dashed gray;
+  background-color: lightgray;
+}
+
+#site-content {
+  flex: 1 1 auto;
+}
+
+#run {
+  width: 100%;
+}
+
+.state {margin-bottom: 15px;}
