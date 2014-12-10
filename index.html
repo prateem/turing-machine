@@ -17,7 +17,7 @@
 </head>
 <body ng-app="machine" ng-controller="machine.main">
 
-<div id="site-content">
+<section id="site-content">
 
   <div class="container">
 
@@ -196,9 +196,9 @@
     </div>
 
   </div>
-</div>
+</section>
 
-<div ng-show="message" ng-class="message.type" id="log">
+<section id="log" ng-show="message" ng-class="message.type">
   <div class="container">
 
     <h3 ng-bind="message.text"></h3>
@@ -224,7 +224,7 @@
     </div>
 
   </div>
-</div>
+</section>
 
 <footer>
   <div class="container text-center small">

@@ -8,7 +8,6 @@ builder.controller("machine.main", ['$scope', function ($scope) {
   $scope.sequence = "";
   $scope.result = "";
   $scope.runLog = [];
-  $scope.finalState = null;
   $scope.message = null;
 
   $scope.newState = {
@@ -49,7 +48,7 @@ builder.controller("machine.main", ['$scope', function ($scope) {
         if (state.name == "initial" && state.reads == initialChar) {
           $scope.result = $scope.sequence;
 
-          $scope.finalState = __readSequence(0, state);
+          __readSequence(0, state);
 
           $scope.machineRunCompleted = true;
           break;
@@ -86,7 +85,6 @@ builder.controller("machine.main", ['$scope', function ($scope) {
   };
 
   var __readSequence = function (index, state) {
-    var returnState = state;
     var toLog = "State '" + state.name + "' read '" + state.reads + "'.";
 
     if (state.direction != "stop") {
@@ -100,7 +98,7 @@ builder.controller("machine.main", ['$scope', function ($scope) {
       for (var newState of $scope.states) {
         if (newState.name == state.becomes && newState.reads == nextChar) {
           toLog += " Moved to state '" + newState.name + "'.";
-          returnState = __readSequence(index, newState);
+          __readSequence(index, newState);
           break;
         }
       }
@@ -109,7 +107,6 @@ builder.controller("machine.main", ['$scope', function ($scope) {
     }
 
     $scope.runLog.push(toLog);
-    return returnState;
   };
 
   var __setCharAt = function (str, index, character) {

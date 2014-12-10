@@ -1,4 +1,4 @@
 turing-machine
 ==============
 
-Simplistic Turing Machine Builder. Extra credit project for the CSC236 course at University of Toronto.
+Simplistic Deterministic Turing Machine Builder. Extra credit project for CSC236 at the University of Toronto.
