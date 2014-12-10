@@ -6,7 +6,7 @@ builder.controller("machine.main", ['$scope', function($scope) {
 
   $scope.states = null;
   $scope.sequence = "";
-  $scope.result = null;
+  $scope.result = "";
   $scope.runLog = [];
 
   $scope.newState = {
@@ -17,6 +17,14 @@ builder.controller("machine.main", ['$scope', function($scope) {
     'left': 'Left',
     'right': 'Right',
     'stop': 'Stop'
+  };
+
+  $scope.reset = function() {
+    $scope.newState = {
+      direction: 'right'
+    };
+
+    $scope.states = null;
   };
 
   $scope.addState = function() {
@@ -33,13 +41,17 @@ builder.controller("machine.main", ['$scope', function($scope) {
 
   $scope.run = function() {
     var __machineRunCompleted = false;
-    var index = 0;
-    var initialChar = $scope.sequence.charAt(index);
+    var initialChar = $scope.sequence.charAt(0);
 
     for (var state of $scope.states) {
       if (state.name == "initial" && state.reads == initialChar) {
+        var finalState = state;
         $scope.result = $scope.sequence;
-        index = __readSequence(index, state);
+
+        if (state.direction != "stop") {
+          finalState = __readSequence(0, state);
+        }
+
         __machineRunCompleted = true;
         break;
       }
@@ -48,34 +60,63 @@ builder.controller("machine.main", ['$scope', function($scope) {
     if (!__machineRunCompleted) {
       $scope.message = "No initial state that begins reading the given input sequence was defined.";
     } else {
-      $scope.message = "Stopped at index " + index + ", character: " + $scope.sequence.charAt(index) + ".";
+      $scope.message = finalState;
     }
 
     console.log($scope.message);
   };
 
-  function __readSequence(index, state) {
-    $scope.result = __setCharAt($scope.result, index, state.writes);
-    
-    if (index < 0 || index == ($scope.sequence.length - 1) || state.direction == "stop") {
-      return index;
-    }
+  $scope.save = function() {
+    var uuid = __guid();
 
-    index = index + (state.direction == 'left' ? -1 : 1);
-    var nextChar = $scope.result.charAt(index);
+    var a = btoa(JSON.stringify($scope.states));
+    console.log(a);
+    console.log(JSON.parse(atob(a)));
 
-    for (var newState of $scope.states) {
-      if (newState.name == state.becomes && newState.reads == nextChar) {
-        index = __readSequence(index, newState);
-        break;
-      }
-    }
-
-    return index;
+    console.log(uuid);
   };
 
-  function __setCharAt(str, index, character) {
+  var __readSequence = function(index, state) {
+
+    var returnState = state;
+
+    if (state.direction != "stop") {
+      
+      $scope.result = __setCharAt($scope.result, index, state.writes);
+
+      index = index + (state.direction == 'left' ? -1 : 1);
+      var nextChar = (index < 0 || index > ($scope.sequence.length - 1))
+          ? " " : $scope.result.charAt(index);
+
+      for (var newState of $scope.states) {
+        if (newState.name == state.becomes && newState.reads == nextChar) {
+          returnState = __readSequence(index, newState);
+          break;
+        }
+      }
+
+    }
+
+    return returnState;
+  };
+
+  var __setCharAt = function(str, index, character) {
     return str.substr(0, index) + character + str.substr(index + character.length)
-  }
+  };
+
+  /** From StackOverflow:
+      http://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript/105074#105074
+  */
+  var __guid = (function() {
+    function s4() {
+      return Math.floor((1 + Math.random()) * 0x10000)
+                 .toString(16)
+                 .substring(1);
+    }
+    return function() {
+      return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+             s4() + '-' + s4() + s4() + s4();
+    };
+  })();
 
 }]);

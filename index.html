@@ -26,12 +26,12 @@
       </div>
       
       <div class="small">
-        <p>Begin by adding named states to the machine, indicating what each state will read and write. Reference states by name when determining what state to go to. Finally, determine whether the read head should move left or right on each state change.</p>
+        <p>Begin by adding named states to the machine, indicating what each state will read and write. Reference states by name when determining what state to go to. Finally, determine whether the read head should move left, right or stop on each state change.</p>
 
         <ul>
           <li>The initial state must be named "initial".</li>
           <li>Names must be a single word consisting of letters or numbers.</li>
-          <li>Read/write fields can only be 1 character long.</li>
+          <li>Read/write fields can only be 1 character long. States may read/write a "blank" if you place a space.</li>
         </ul>
 
         <p>When you're ready, type in your input sequence and click the button below to see the results of your turing machine!</p>
@@ -51,8 +51,19 @@
             <input type="submit" class="form-control btn btn-success" value="Run the machine">
           </div>
         </div>
-      </form>
 
+        <div class="form-group">
+          <div class="col-xs-12">
+            <button type="button" class="form-control btn btn-default" ng-click="reset()">Start Over</button>
+          </div>
+        </div>
+
+<!--         <div class="form-group">
+          <div class="col-xs-12">
+            <button type="button" class="form-control btn btn-default" ng-click="save()">Save and Share</button>
+          </div>
+        </div> -->
+      </form>
 
     </div>
     <div class="col-lg-9 col-lg-pull-3">
@@ -72,7 +83,7 @@
           <label for="reads" class="col-xs-3 col-md-12">Reads</label>
             <div class="col-xs-9 col-md-12">
               <input type="text" id="reads" ng-model="newState.reads" class="form-control"
-                     placeholder="0" pattern="[\S]" maxlength="1" required>
+                     placeholder="0" pattern="." maxlength="1" ng-trim="false" required>
             </div>
           </div>
 
@@ -80,7 +91,7 @@
             <label for="writes" class="col-xs-3 col-md-12">Writes</label>
             <div class="col-xs-9 col-md-12">
               <input type="text" id="writes" ng-model="newState.writes" class="form-control"
-                     placeholder="1" pattern="[\S]" maxlength="1" required>
+                     placeholder="1" pattern="." maxlength="1" ng-trim="false" required>
             </div>
           </div>
 
@@ -149,16 +160,16 @@
             <div class="col-xs-12 col-md-2 text-center state">
               <label class="visible-xs visible-sm col-xs-3" for="state-{{$index}}-reads">Reads</label>
               <div class="col-xs-9 col-md-12">
-                <input type="text" id="reads" ng-model="state.reads" class="form-control"
-                       placeholder="0" pattern="[\w]" maxlength="1" id="state-{{$index}}-reads">
+                <input type="text" id="reads" ng-model="state.reads" class="form-control" ng-trim="false"
+                       placeholder="0" pattern="." maxlength="1" id="state-{{$index}}-reads">
               </div>
             </div>
 
             <div class="col-xs-12 col-md-2 text-center state">
               <label class="visible-xs visible-sm col-xs-3" for="state-{{$index}}-writes">Writes</label>
               <div class="col-xs-9 col-md-12">
-                <input type="text" id="writes" ng-model="state.writes" class="form-control"
-                       placeholder="1" pattern="[\w]" maxlength="1" id="state-{{$index}}-writes">
+                <input type="text" id="writes" ng-model="state.writes" class="form-control" ng-trim="false"
+                       placeholder="1" pattern="." maxlength="1" id="state-{{$index}}-writes">
               </div>
             </div>
 
@@ -192,7 +203,7 @@
 
 <footer>
   <div class="container text-center">
-    Created by Prateem Shrestha
+    Created by Prateem Shrestha. Licensed under GNU GPL 2.0. Code found at <a href="#">Github</a>.
   </div>
 </footer>
 </body>
