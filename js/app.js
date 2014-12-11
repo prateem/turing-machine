@@ -6,9 +6,11 @@ builder.controller("machine.main", ['$scope', function ($scope) {
 
   $scope.states = null;
   $scope.sequence = "";
-  $scope.result = "";
+  $scope.modifiedSequence = "";
+  $scope.originalSequence = "";
   $scope.runLog = [];
   $scope.message = null;
+  $scope.machineRunCompleted = false;
 
   $scope.newState = {
     direction: 'right'
@@ -46,7 +48,7 @@ builder.controller("machine.main", ['$scope', function ($scope) {
 
       for (var state of $scope.states) {
         if (state.name == "initial" && state.reads == initialChar) {
-          $scope.result = $scope.sequence;
+          $scope.modifiedSequence = angular.copy($scope.sequence);
 
           __readSequence(0, state);
 
@@ -65,7 +67,7 @@ builder.controller("machine.main", ['$scope', function ($scope) {
     }
 
     $scope.runLog.reverse();
-    $scope.original = angular.copy($scope.sequence);
+    $scope.originalSequence = angular.copy($scope.sequence);
   };
 
   var __setMessage = function(type, text) {
@@ -88,12 +90,12 @@ builder.controller("machine.main", ['$scope', function ($scope) {
     var toLog = "State '" + state.name + "' read '" + state.reads + "'.";
 
     if (state.direction != "stop") {
-      $scope.result = __setCharAt($scope.result, index, state.writes);
+      $scope.modifiedSequence = __setCharAt($scope.modifiedSequence, index, state.writes);
       toLog += " Replaced with '" + state.writes + "'.";
 
       index = index + (state.direction == 'left' ? -1 : 1);
-      var nextChar = (index < 0 || index > ($scope.sequence.length - 1))
-          ? " " : $scope.result.charAt(index);
+      var nextChar = (index < 0 || index > ($scope.modifiedSequence.length - 1))
+          ? " " : $scope.modifiedSequence.charAt(index);
 
       for (var newState of $scope.states) {
         if (newState.name == state.becomes && newState.reads == nextChar) {
@@ -110,7 +112,13 @@ builder.controller("machine.main", ['$scope', function ($scope) {
   };
 
   var __setCharAt = function (str, index, character) {
-    return str.substr(0, index) + character + str.substr(index + character.length)
+    if (index >= str.length) {
+      return str + character;
+    } else if (index < 0) {
+      return character + str;
+    } else {
+      return str.substr(0, index) + character + str.substr(index + character.length)
+    }
   };
 
 }]);
