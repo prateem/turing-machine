@@ -110,7 +110,13 @@ builder.controller("machine.main", ['$scope', function ($scope) {
   };
 
   var __setCharAt = function (str, index, character) {
-    return str.substr(0, index) + character + str.substr(index + character.length)
+    if (index >= str.length) {
+      return str + character;
+    } else if (index < 0) {
+      return character + str;
+    } else {
+      return str.substr(0, index) + character + str.substr(index + character.length)
+    }
   };
 
 }]);
